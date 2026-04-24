@@ -29,7 +29,7 @@ def charlie_munger_agent(state: AgentState, agent_id: str = "charlie_munger_agen
     
     for ticker in tickers:
         progress.update_status(agent_id, ticker, "Fetching financial metrics")
-        metrics = get_financial_metrics(ticker, end_date, period="annual", limit=10, api_key=api_key)  # Munger looks at longer periods
+        metrics = get_financial_metrics(ticker, end_date, period="annual", limit=10)
         
         progress.update_status(agent_id, ticker, "Gathering financial line items")
         financial_line_items = search_line_items(

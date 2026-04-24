@@ -26,7 +26,7 @@ def sentiment_analyst_agent(state: AgentState, agent_id: str = "sentiment_analys
             ticker=ticker,
             end_date=end_date,
             limit=1000,
-            api_key=api_key,
+
         )
 
         progress.update_status(agent_id, ticker, "Analyzing trading patterns")

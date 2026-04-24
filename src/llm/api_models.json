@@ -2,7 +2,7 @@
   {
     "display_name": "Grok 4",
     "model_name": "grok-4-0709",
-    "provider": "xAI"
+    "provider": "Groq"
   },
   {
     "display_name": "GPT-5.1",

@@ -6,8 +6,7 @@ import questionary
 from colorama import Fore, Style
 
 from src.utils.analysts import ANALYST_ORDER
-from src.llm.models import LLM_ORDER, OLLAMA_LLM_ORDER, get_model_info, ModelProvider, find_model_by_name
-from src.utils.ollama import ensure_ollama_and_model
+from src.llm.models import DEFAULT_MODEL_NAME, DEFAULT_PROVIDER
 
 from dataclasses import dataclass
 from typing import Optional
@@ -103,88 +102,9 @@ def select_analysts(flags: dict | None = None) -> list[str]:
 
 
 def select_model(use_ollama: bool, model_flag: str | None = None) -> tuple[str, str]:
-    model_name: str = ""
-    model_provider: str | None = None
-
-    if model_flag:
-        model = find_model_by_name(model_flag)
-        if model:
-            print(
-                f"\nUsing specified model: {Fore.CYAN}{model.provider.value}{Style.RESET_ALL} - {Fore.GREEN + Style.BRIGHT}{model.model_name}{Style.RESET_ALL}\n"
-            )
-            return model.model_name, model.provider.value
-        else:
-            print(f"{Fore.RED}Model '{model_flag}' not found. Please select a model.{Style.RESET_ALL}")
-
-    if use_ollama:
-        print(f"{Fore.CYAN}Using Ollama for local LLM inference.{Style.RESET_ALL}")
-        model_name = questionary.select(
-            "Select your Ollama model:",
-            choices=[questionary.Choice(display, value=value) for display, value, _ in OLLAMA_LLM_ORDER],
-            style=questionary.Style(
-                [
-                    ("selected", "fg:green bold"),
-                    ("pointer", "fg:green bold"),
-                    ("highlighted", "fg:green"),
-                    ("answer", "fg:green bold"),
-                ]
-            ),
-        ).ask()
-
-        if not model_name:
-            print("\n\nInterrupt received. Exiting...")
-            sys.exit(0)
-
-        if model_name == "-":
-            model_name = questionary.text("Enter the custom model name:").ask()
-            if not model_name:
-                print("\n\nInterrupt received. Exiting...")
-                sys.exit(0)
-
-        if not ensure_ollama_and_model(model_name):
-            print(f"{Fore.RED}Cannot proceed without Ollama and the selected model.{Style.RESET_ALL}")
-            sys.exit(1)
-
-        model_provider = ModelProvider.OLLAMA.value
-        print(
-            f"\nSelected {Fore.CYAN}Ollama{Style.RESET_ALL} model: {Fore.GREEN + Style.BRIGHT}{model_name}{Style.RESET_ALL}\n"
-        )
-    else:
-        model_choice = questionary.select(
-            "Select your LLM model:",
-            choices=[questionary.Choice(display, value=(name, provider)) for display, name, provider in LLM_ORDER],
-            style=questionary.Style(
-                [
-                    ("selected", "fg:green bold"),
-                    ("pointer", "fg:green bold"),
-                    ("highlighted", "fg:green"),
-                    ("answer", "fg:green bold"),
-                ]
-            ),
-        ).ask()
-
-        if not model_choice:
-            print("\n\nInterrupt received. Exiting...")
-            sys.exit(0)
-
-        model_name, model_provider = model_choice
-
-        model_info = get_model_info(model_name, model_provider)
-        if model_info and model_info.is_custom():
-            model_name = questionary.text("Enter the custom model name:").ask()
-            if not model_name:
-                print("\n\nInterrupt received. Exiting...")
-                sys.exit(0)
-
-        if model_info:
-            print(
-                f"\nSelected {Fore.CYAN}{model_provider}{Style.RESET_ALL} model: {Fore.GREEN + Style.BRIGHT}{model_name}{Style.RESET_ALL}\n"
-            )
-        else:
-            model_provider = "Unknown"
-            print(f"\nSelected model: {Fore.GREEN + Style.BRIGHT}{model_name}{Style.RESET_ALL}\n")
-
-    return model_name, model_provider or ""
+    # Force Groq default model and disable interactive model selection prompt.
+    del use_ollama
+    return DEFAULT_MODEL_NAME, DEFAULT_PROVIDER.value
 
 
 def resolve_dates(start_date: str | None, end_date: str | None, *, default_months_back: int | None = None) -> tuple[str, str]:

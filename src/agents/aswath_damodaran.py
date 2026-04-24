@@ -60,7 +60,6 @@ def aswath_damodaran_agent(state: AgentState, agent_id: str = "aswath_damodaran_
                 "total_debt",
             ],
             end_date,
-            api_key=api_key,
         )
 
         progress.update_status(agent_id, ticker, "Getting market cap")

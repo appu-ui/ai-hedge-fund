@@ -36,7 +36,7 @@ def valuation_analyst_agent(state: AgentState, agent_id: str = "valuation_analys
             end_date=end_date,
             period="ttm",
             limit=8,
-            api_key=api_key,
+
         )
         if not financial_metrics:
             progress.update_status(agent_id, ticker, "Failed: No financial metrics found")
@@ -136,7 +136,7 @@ def valuation_analyst_agent(state: AgentState, agent_id: str = "valuation_analys
         # ------------------------------------------------------------------
         # Aggregate & signal
         # ------------------------------------------------------------------
-        market_cap = get_market_cap(ticker, end_date, api_key=api_key)
+        market_cap = get_market_cap(ticker, end_date)
         if not market_cap:
             progress.update_status(agent_id, ticker, "Failed: Market cap unavailable")
             continue
